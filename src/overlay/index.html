@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>overlay</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body class="side-right">
+  <!-- Nothing on this page carries words: every on-screen string comes from copy.ts. -->
+  <div id="backdrop"></div>
+  <div id="root">
+    <canvas class="stage" id="stage"></canvas>
+    <canvas class="stage" id="light"></canvas>
+    <div class="fx-flash" id="flash"></div>
+    <!-- Everything laid out in pixels lives in here. #hud is 1920 x 1080 whatever the Browser source is, and one zoom
+         scales it to fill: see render-scale.ts. The canvases stay outside, sized in their own right. -->
+    <div id="hud">
+      <div id="stinger"><div class="top"></div><div class="sub"></div></div>
+      <div id="banner" class="banner"><div class="who"></div><div class="what"></div><div class="sub"></div></div>
+      <div id="thanks"></div>
+      <div id="minidraw"><div class="t"></div><div class="reel"></div><div class="hint"></div></div>
+    </div>
+  </div>
+  <script type="module" src="./main.ts"></script>
+</body>
+</html>

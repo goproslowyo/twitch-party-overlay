@@ -1,0 +1,156 @@
+/* Overlay styles — ported from the prototype page (the approved ★ PARTY visual).
+   Rules the build honours: DOM animations are transform/opacity only, no blur/shadow filters, every flash ≤ 2 Hz.
+   Theme colours arrive as CSS variables from theme.ts (applyThemeVars); the defaults below are club-deck's. */
+:root { --accent:#26f0ff; --accent2:#ff3df0; --gold:#ffd166; --panel:rgba(8,8,22,.86); --line:rgba(38,240,255,.45);
+        --t0:#3ddc97; --t1:#b388ff; --t2:#ff9f1c; --bd1:#3a0ca3; --bd2:#0a9396; --ink:#07070f; --hud:1; --hud-w:1920px; --hud-h:1080px;
+        --rack-w:300px; --scene-shift:calc(var(--rack-w) / 2 + 50px); }
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:100%; height:100%; overflow:hidden; }
+body { font-family:"Avenir Next","Segoe UI",system-ui,sans-serif; background:transparent; color:#eaf6ff; user-select:none; }
+
+/* faux stream backdrop — only under ?debug=1, so a screenshot has something behind the chrome. Not part of the design. */
+#backdrop { position:absolute; inset:0; z-index:0; display:none;
+  background: radial-gradient(60vw 60vw at 15% 10%, var(--bd1) 0%, transparent 60%),
+              radial-gradient(50vw 50vw at 90% 95%, var(--bd2) 0%, transparent 60%), #06060f; }
+body.debug #backdrop { display:block; }
+body.debug.barless #backdrop { display:none; }
+
+#root { position:absolute; inset:0; z-index:1; }
+body:not(.ready) #root { visibility:hidden; }   /* nothing shows until the first snapshot arrives */
+canvas.stage { position:absolute; inset:0; width:100%; height:100%; }
+#light { pointer-events:none; }   /* the optional WebGL light layer: same box as #stage, transparent, additive on its own — no blend mode */
+.lbl { font-size:11px; letter-spacing:3px; font-weight:800; opacity:.7; }
+/* The overlay is drawn for 1920 x 1080 and every size in here is a 1080p pixel. A 3840 x 2160 Browser source would
+   otherwise show the rack and the stingers at half their share of the frame, so #hud is given the 1080p size outright
+   and scaled to fill. `transform` rather than `zoom`: zoom also rewrites how the box's own inset and percentages
+   resolve, which left the whole layer covering a quarter of the frame. A transform scales what is laid out, nothing
+   more, so every percentage inside resolves against 1920 x 1080 exactly as it did before the source went 4K. */
+#hud { position:absolute; left:0; top:0; width:var(--hud-w); height:var(--hud-h);
+  transform:scale(var(--hud)); transform-origin:0 0; pointer-events:none; z-index:2; }
+#hud > * { pointer-events:auto; }
+
+/* ————— shared stinger (unlock / tier / drained / big-contribution moments) — 45 % down, centred over the scene ————— */
+#stinger { position:absolute; left:50%; top:45%; transform:translate(-50%,-50%) scale(.6); opacity:0; z-index:6;
+  pointer-events:none; text-align:center; transition:opacity .2s, transform .38s cubic-bezier(.2,1.7,.4,1); }
+#stinger.show { opacity:1; transform:translate(-50%,-50%) scale(1); }
+#stinger .top { font-size:88px; font-weight:900; letter-spacing:5px; color:var(--gold); -webkit-text-stroke:2px #000; line-height:1; }
+#stinger .sub { font-size:20px; letter-spacing:6px; font-weight:800; margin-top:10px; background:var(--panel); display:inline-block; padding:6px 18px; border-radius:8px; }
+#stinger .sub:empty { display:none; }
+#stinger.accent .top { color:var(--accent); } #stinger.danger .top { color:#ff6b6b; }
+#stinger.contrib .top { font-size:56px; letter-spacing:3px; color:#fff; }
+body.side-right #stinger { left:calc(50% - var(--scene-shift)); } body.side-left #stinger { left:calc(50% + var(--scene-shift)); }
+
+/* ————— thank-you line: every tip / cheer / sub / gift, however small — 70 % down ————— */
+#thanks { position:absolute; left:50%; top:70%; transform:translate(-50%,-6px) scale(.8); opacity:0; z-index:5; pointer-events:none;
+  background:var(--panel); border:2px solid var(--gold); border-radius:999px; padding:10px 26px; font-size:24px; font-weight:800; letter-spacing:1px;
+  transition:opacity .25s, transform .25s; white-space:nowrap; outline:0 solid rgba(255,209,102,0); }
+#thanks.show { opacity:1; transform:translate(-50%,0) scale(1); animation:thanksPop 2.6s ease-out; }
+@keyframes thanksPop { 0% { outline:0 solid rgba(255,209,102,.9); } 40% { outline:14px solid rgba(255,209,102,0); } 100% { outline:14px solid rgba(255,209,102,0); } }
+#thanks b { color:var(--gold); }
+#thanks img.pic { width:1.2em; height:1.2em; border-radius:50%; vertical-align:-0.25em; object-fit:cover; } /* the Avatar Picture in the glyph's place */
+body.side-right #thanks { left:calc(50% - var(--scene-shift)); } body.side-left #thanks { left:calc(50% + var(--scene-shift)); }
+
+/* ————— landing banner — 58 % down, shown at touchdown ————— */
+.banner { position:absolute; left:50%; top:58%; transform:translate(-50%,-50%) scale(.6); opacity:0; z-index:5;
+  transition:opacity .25s, transform .35s cubic-bezier(.2,1.6,.4,1); text-align:center; pointer-events:none; }
+.banner.show { opacity:1; transform:translate(-50%,-50%) scale(1); }
+.banner .who { font-size:20px; font-weight:600; opacity:.9; margin-bottom:6px; }
+.banner .what { font-size:52px; font-weight:900; letter-spacing:2px; padding:8px 32px; background:var(--panel);
+  border:2px solid var(--accent); border-radius:14px; display:inline-block; }
+.banner .what.done { border-color:var(--gold); color:var(--gold); }
+.banner .what.dry { border-color:#ff6b6b; color:#ff6b6b; }
+.banner .sub { font-size:22px; letter-spacing:5px; font-weight:800; margin-top:10px; color:#eaf6ff; opacity:1; display:inline-block;
+  padding:4px 16px; background:var(--panel); border-radius:8px; } /* the Left count: white on a plate, legible over the crowd at 720p */
+body.side-right .banner { left:calc(50% - var(--scene-shift)); } body.side-left .banner { left:calc(50% + var(--scene-shift)); }
+
+/* ————— mini-draw (genre roulette / chat-rule draw: a draw INSIDE an Outcome) — the drop drives it ————— */
+#minidraw { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); z-index:6; display:none; min-width:560px;
+  background:var(--panel); border:2px solid var(--gold); border-radius:14px; padding:14px 30px 18px; text-align:center; }
+#minidraw.show { display:block; }
+#minidraw .t { font-size:12px; letter-spacing:4px; font-weight:800; opacity:.75; }
+#minidraw .reel { font-size:44px; font-weight:900; letter-spacing:3px; color:var(--gold); margin-top:6px; min-height:54px; }
+#minidraw.settled .reel { color:#fff; }
+#minidraw .hint { font-size:11px; letter-spacing:2px; opacity:.5; margin-top:6px; }
+body.side-right #minidraw { left:calc(50% - var(--scene-shift)); } body.side-left #minidraw { left:calc(50% + var(--scene-shift)); }
+
+/* ————— the 8 % soft pulse (≥ 0.7 intensity) ————— */
+.fx-flash { position:absolute; inset:0; background:#fff; opacity:0; pointer-events:none; transition:opacity .9s; z-index:4; }
+.fx-flash.on { opacity:.08; transition:opacity .25s; }
+
+/* ————— READY row (jumpers + a number) ————— */
+.qrow { display:flex; align-items:center; gap:4px; margin-top:6px; }
+.qrow .j { font-size:22px; line-height:1; }
+.qrow .j.ghost { opacity:.18; }
+.qrow .n { font-size:32px; font-weight:900; color:var(--gold); margin-left:8px; line-height:1; }
+.qrow .more { font-size:14px; font-weight:800; color:var(--gold); opacity:.8; }
+
+/* ================================ the rack ================================ */
+.rk-panel { position:absolute; top:40px; max-height:calc(100% - 80px); width:var(--rack-w); background:var(--panel); border:2px solid var(--line);
+  border-radius:18px; z-index:3; display:flex; flex-direction:column; padding:12px 16px 12px; gap:6px; overflow:hidden; }
+body.side-right .rk-panel { right:40px; } body.side-left .rk-panel { left:40px; }
+.rk-panel::before { content:""; position:absolute; inset:-2px; border-radius:18px; pointer-events:none; opacity:0;
+  border:3px solid var(--gold); transition:opacity .4s; }
+.rk-panel.cel1::before { opacity:.5; border-color:var(--accent); } .rk-panel.cel2::before { opacity:.9; }
+.rk-panel.cel3::before, .rk-panel.cel4::before { opacity:1; border-width:6px; }
+.rk-panel.dry { border-color:#ff6b6b; }
+.rk-head { display:flex; justify-content:space-between; align-items:center; }
+.rk-head .brand { font-weight:900; letter-spacing:4px; font-size:14px; color:var(--accent); }
+.rk-now { height:76px; overflow:hidden; border:1px solid rgba(255,255,255,.14); border-radius:10px; padding:8px 10px; flex:none; }
+.rk-now .what { font-size:19px; font-weight:900; letter-spacing:1px; line-height:1.15; margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.rk-now.hit { border-color:var(--gold); } .rk-now.hit .what { color:var(--gold); }
+.rk-now.drift { border-color:var(--accent); }
+.rk-now.dry { border-color:#ff6b6b; } .rk-now.dry .what { color:#ff6b6b; }
+.rk-now .who { font-size:12px; opacity:.8; margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.rk-fader { display:flex; gap:12px; align-items:stretch; height:82px; flex:none; }
+.rk-fader .ladder { width:34px; display:flex; flex-direction:column-reverse; gap:3px; }
+.rk-fader .ladder i { flex:1; background:rgba(255,255,255,.1); border-radius:2px; }
+.rk-fader .ladder i.on { background:var(--accent); }
+.rk-fader .ladder i.top { background:var(--gold); }
+.rk-fader.full .ladder i.on { background:var(--gold); }
+.rk-fader.full .amt, .rk-fader.full .of { color:var(--gold); }
+.rk-fader .nums { flex:1; display:flex; flex-direction:column; justify-content:flex-end; }
+.rk-fader .amt { font-size:40px; font-weight:900; line-height:1; }
+.rk-fader .of { font-size:14px; opacity:.7; font-weight:700; margin-top:4px; }
+.rk-legend { font-size:11.5px; letter-spacing:.3px; line-height:1.35; color:rgba(255,255,255,.85); border-top:1px solid rgba(255,255,255,.12); padding-top:6px; flex:none; }
+.rk-queue { flex:none; }
+.rk-tiers { display:flex; flex-direction:column; gap:4px; flex:none; }
+.rk-tiers .t { display:flex; align-items:center; gap:10px; font-size:12px; font-weight:800; letter-spacing:2px; color:var(--tc); opacity:.5; }
+.rk-tiers .t i { width:12px; height:12px; border-radius:50%; background:rgba(255,255,255,.12); }
+.rk-tiers .t.on i { background:var(--tc); } .rk-tiers .t.on { opacity:1; }
+.rk-tiers .t.next { opacity:.85; } .rk-tiers .t.next span.g { color:var(--gold); }
+.rk-tiers .t span.g { opacity:.8; margin-left:auto; letter-spacing:1px; font-weight:700; color:#fff; }
+.rk-stock { flex:0 1 auto; min-height:0; overflow:hidden; display:flex; flex-direction:column; gap:1px; }
+.rk-stock .grp { font-size:10px; letter-spacing:3px; font-weight:800; opacity:.55; margin:4px 0 1px; color:var(--tc); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex:none; }
+.rk-stock .grp.on { opacity:1; }
+.rk-stock .row { display:flex; align-items:center; gap:7px; height:20px; font-size:11.5px; font-weight:700; letter-spacing:.5px;
+  padding:0 6px; border-radius:6px; white-space:nowrap; border-left:3px solid var(--tc); flex:none; }
+.rk-stock .row .g { width:18px; text-align:center; font-size:14px; }
+.rk-stock .row .nm { flex:1; overflow:hidden; text-overflow:ellipsis; }
+.rk-stock .row .nm.masked { letter-spacing:2px; opacity:.35; font-size:10px; }
+.rk-stock .row .pips { display:flex; gap:2px; }
+.rk-stock .row .pips i { width:7px; height:7px; border-radius:2px; background:var(--shape); }
+.rk-stock .row .pips i.off { background:rgba(255,255,255,.14); }
+.rk-stock .row.lock { opacity:.55; } .rk-stock .row.lock .pips i { background:var(--tc); opacity:.7; }
+.rk-stock .row.dead { opacity:.3; text-decoration:line-through; }
+.rk-stock .row.under { background:rgba(255,255,255,.14); outline:1px solid var(--accent); }
+.rk-stock .row.hit { background:var(--gold); color:#000; }
+.rk-stock .row.hit .pips i { background:#000; } .rk-stock .row.hit .pips i.off { background:rgba(0,0,0,.25); }
+.rk-stock .row.new { color:var(--gold); }
+.rk-stock .grid { display:flex; flex-wrap:wrap; gap:4px; padding:2px 0 6px; }
+.rk-stock .grid .cell { display:flex; align-items:center; gap:3px; height:24px; padding:0 7px; border-radius:6px; font-size:11px; font-weight:800;
+  background:rgba(255,255,255,.07); border-left:3px solid var(--tc); }
+.rk-stock .grid .cell .g { font-size:15px; }
+.rk-stock .grid .cell.lock { opacity:.5; }
+.rk-stock .grid .cell.dead { opacity:.3; text-decoration:line-through; }
+.rk-stock .grid .cell.under { background:rgba(255,255,255,.2); outline:1px solid var(--accent); }
+.rk-stock .grid .cell.hit { background:var(--gold); color:#000; }
+.rk-stock .grid .cell.new { color:var(--gold); }
+
+/* ————— debug chrome (?debug=1) — client-only test bar, deliberately NOT part of the design ————— */
+#bar { position:absolute; left:50%; top:8px; transform:translateX(-50%); z-index:10; display:flex; gap:5px; align-items:center; flex-wrap:wrap; justify-content:center;
+  max-width:calc(100% - 40px); background:#101018; border:1px solid #3a3a55; border-radius:16px; padding:7px 12px; font-family:ui-monospace, Menlo, monospace; font-size:12px; white-space:nowrap; }
+#bar button { font:inherit; color:#eaf6ff; background:#1c1c2c; border:1px solid #44446a; border-radius:999px; padding:5px 9px; cursor:pointer; }
+#bar button:hover { background:#2a2a44; }
+#bar button.fire { background:#c1121f; border-color:#ff7b89; font-weight:800; letter-spacing:2px; }
+#bar .clock { opacity:.7; min-width:90px; text-align:right; }
+body.barless #bar { display:none; }
