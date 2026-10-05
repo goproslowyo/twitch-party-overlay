@@ -1,0 +1,33 @@
+{
+  "name": "twitch-party-overlay",
+  "version": "2.0.0",
+  "description": "A Twitch stream overlay that turns tips, cheers and subs into unlocks a mod fires on stream.",
+  "license": "MIT",
+  "author": "GoProSlowYo",
+  "homepage": "https://github.com/goproslowyo/twitch-party-overlay",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/goproslowyo/twitch-party-overlay.git"
+  },
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun --watch src/main.ts",
+    "start": "bun src/main.ts",
+    "test": "bun test",
+    "typecheck": "bun x tsc --noEmit",
+    "build": "bun build --compile src/main.ts --outfile dist/twitch-party-overlay",
+    "sprites": "bun scripts/sprites/draw.ts"
+  },
+  "devDependencies": {
+    "@resvg/resvg-js": "2.6.2",
+    "@types/bun": "latest",
+    "@types/socket.io": "^2.1.13",
+    "@types/socket.io-client": "^1.4.36",
+    "socket.io": "^2.5.1",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "socket.io-client": "^2.5.0"
+  }
+}
