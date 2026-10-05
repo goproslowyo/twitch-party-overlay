@@ -1,0 +1,64 @@
+# On a `v*` tag (`just release 1.2.3`, then `git push --tags`): typecheck, test, compile one self-contained binary per OS
+# and attach them to a GitHub Release for that tag, with a SHA256SUMS file. Nothing is signed or notarized yet, so the
+# README tells the streamer about the one-time "Run anyway" / "Open Anyway" prompt.
+#
+# The macOS and Linux binaries ship inside a .zip: a bare download loses the executable bit, a zip keeps it.
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write # to create the Release and upload its files
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.4.2" # keep in step with ARG BUN_VERSION in the Dockerfile
+      - run: bun install --frozen-lockfile
+      - run: bun x tsc --noEmit
+      - run: bun test
+
+      - name: Compile one binary per OS
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          build() { # <bun target> <file name>
+            bun build --compile --minify --target="$1" src/main.ts --outfile "dist/$2"
+          }
+          build bun-windows-x64  twitch-party-overlay-windows.exe
+          build bun-darwin-arm64 twitch-party-overlay-macos-apple-silicon
+          build bun-darwin-x64   twitch-party-overlay-macos-intel
+          build bun-linux-x64    twitch-party-overlay-linux-x64
+          build bun-linux-arm64  twitch-party-overlay-linux-arm64
+          ls -lh dist
+
+      - name: Zip the macOS and Linux binaries (keeps the executable bit) and write SHA256SUMS
+        working-directory: dist
+        run: |
+          set -euo pipefail
+          for f in twitch-party-overlay-macos-apple-silicon twitch-party-overlay-macos-intel twitch-party-overlay-linux-x64 twitch-party-overlay-linux-arm64; do
+            chmod +x "$f"
+            zip -q -X "$f.zip" "$f"
+            rm "$f"
+          done
+          sha256sum * > SHA256SUMS
+          cat SHA256SUMS
+
+      - name: Create the GitHub Release for the tag and attach the files
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          tag="${GITHUB_REF_NAME}"
+          notes="Downloads for ${tag}. Pick the file for your computer, unzip it if it is a .zip, then double-click it. The Dashboard opens in your browser. See the README for the one-time \"Run anyway\" / \"Open Anyway\" step."
+          if gh release view "$tag" >/dev/null 2>&1; then
+            gh release upload "$tag" dist/* --clobber
+          else
+            gh release create "$tag" dist/* --title "twitch-party-overlay $tag" --notes "$notes" --verify-tag
+          fi

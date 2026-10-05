@@ -1,0 +1,7 @@
+# Keep the build context small and secrets-free: the Dockerfile copies only package.json, bun.lock, tsconfig.json, src/.
+*
+!package.json
+!bun.lock
+!tsconfig.json
+!src
+src/**/*.test.ts

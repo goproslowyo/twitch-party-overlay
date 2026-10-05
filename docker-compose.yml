@@ -1,0 +1,49 @@
+# Runs the scratch image from the Dockerfile. Day-to-day you drive it with `just` (see justfile / README → Advanced);
+# settings live in ./.env (copy .env.example), so no variables on the command line.
+#
+# - 8700 (streamer Dashboard) and 8701 (funnel: mods + Ko-fi) are published on 127.0.0.1 ONLY. Anything reaching 8700
+#   is the Streamer role, so it must never be exposed beyond this computer; a tunnel such as Tailscale Funnel forwards
+#   to 127.0.0.1:8701.
+# - 8702 (overlay) is published on 127.0.0.1 only as well, because OBS normally runs on this same computer: add it as a
+#   Browser source at http://localhost:8702/overlay. OBS on another computer: change the line to "8702:8702" so the LAN
+#   can reach it, and tick "OBS runs on another computer" on the Config page so the page shows this computer's address.
+#   Inside the container the listener always binds every interface (BIND_ALL=1); the ports list below is what decides
+#   who can reach it. HOST_LAN_IP carries this computer's own address in, because the container can only see its own
+#   bridge address and would otherwise print a dead link as the LAN overlay URL; `just up` fills it in via
+#   scripts/lan-ip.sh.
+# - ./data holds config.json + ledger.sqlite. The secrets file stays OUTSIDE the repo and is bind-mounted from
+#   $SECRETS_FILE; it is mounted read-write because the service writes the broadcaster tokens into it when you connect
+#   your Twitch account (and again on every token refresh).
+# - `restart: on-failure`, not `unless-stopped`: the Dashboard's Shut down button exits 0 and must STAY down (unless-stopped
+#   would start it straight back up); a crash still restarts. The cost: after a computer or Docker restart the container
+#   does not come back by itself; `just show` starts it.
+# - host.docker.internal is this computer itself from inside the container (Firebot: http://host.docker.internal:7472).
+# - `EISDIR` / `secrets.env is a directory`: Docker was started before the secrets file existed, so Docker made a folder
+#   there. Delete the folder, start again, and the Setup page (http://localhost:8700/setup) writes the file. `just doctor`
+#   catches this.
+services:
+  overlay:
+    build:
+      context: .
+      args:
+        VERSION: ${VERSION:-dev}
+        GIT_SHA: ${GIT_SHA:-unknown}
+    image: twitch-party-overlay:latest
+    init: true
+    restart: on-failure
+    stop_grace_period: 8s
+    ports:
+      - "127.0.0.1:8700:8700"
+      - "127.0.0.1:8701:8701"
+      - "127.0.0.1:8702:8702" # OBS on another computer: "8702:8702" (see the note at the top)
+    volumes:
+      - ./data:/data
+      - "${SECRETS_FILE:?set SECRETS_FILE in .env (copy .env.example)}:/secrets/secrets.env"
+    environment:
+      SECRETS_FILE: /secrets/secrets.env
+      HOST_LAN_IP: ${HOST_LAN_IP:-}
+      VERBOSE: ${VERBOSE:-1}
+      DEBUG: ${DEBUG:-0}
+      TZ: ${TZ:-}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
