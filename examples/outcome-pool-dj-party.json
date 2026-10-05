@@ -1,0 +1,313 @@
+{
+  "outcomes": [
+    {
+      "id": "stickers",
+      "name": "STICKERS",
+      "glyph": "🎟️",
+      "shape": "giveaway",
+      "tier": 0,
+      "initialLeft": 5,
+      "restockable": false,
+      "occupancy": "instant",
+      "description": "A chat raffle for a sticker pack. The winner is drawn in chat, and gets their claim link from the streamer straight after.",
+      "raffle": true
+    },
+    {
+      "id": "shirt-t0",
+      "name": "SHIRT",
+      "glyph": "👕",
+      "shape": "giveaway",
+      "tier": 0,
+      "initialLeft": 1,
+      "restockable": false,
+      "occupancy": "instant",
+      "description": "A chat raffle for a shirt. The winner is drawn in chat, and gets their claim link from the streamer straight after.",
+      "raffle": true
+    },
+    {
+      "id": "artist-spotlight",
+      "name": "ARTIST SPOTLIGHT",
+      "glyph": "🎤",
+      "shape": "moment",
+      "tier": 0,
+      "initialLeft": 2,
+      "restockable": true,
+      "occupancy": "~1 track",
+      "description": "Chat shouts out artists, the mods run a poll (you thumbs-up each candidate over comms), and you play any track by the winning artist. A named artist, never a named song."
+    },
+    {
+      "id": "no-waveforms-mix",
+      "name": "NO-WAVEFORMS MIX",
+      "glyph": "〰️",
+      "shape": "challenge",
+      "tier": 0,
+      "initialLeft": 1,
+      "restockable": true,
+      "occupancy": "1–2 transitions",
+      "description": "Hide the waveforms and mix the next transition or two by ear alone."
+    },
+    {
+      "id": "oven-mitt-mix",
+      "name": "OVEN-MITT MIX",
+      "glyph": "🧤",
+      "shape": "challenge",
+      "tier": 0,
+      "initialLeft": 1,
+      "restockable": true,
+      "occupancy": "1 transition",
+      "description": "Oven mitts on for the next transition."
+    },
+    {
+      "id": "full-library-shuffle",
+      "name": "FULL-LIBRARY SHUFFLE",
+      "glyph": "🔀",
+      "shape": "challenge",
+      "tier": 0,
+      "initialLeft": 1,
+      "restockable": true,
+      "occupancy": "~1 track",
+      "description": "Scroll the whole library blind, stop anywhere, and play whatever you land on. No take-backs."
+    },
+    {
+      "id": "one-hand-behind-back",
+      "name": "ONE HAND BEHIND THE BACK",
+      "glyph": "🖐️",
+      "shape": "challenge",
+      "tier": 0,
+      "initialLeft": 1,
+      "restockable": true,
+      "occupancy": "1 transition",
+      "description": "One hand behind your back for the next transition."
+    },
+    {
+      "id": "surrender-the-crate",
+      "name": "SURRENDER THE CRATE",
+      "glyph": "📦",
+      "shape": "challenge",
+      "tier": 0,
+      "initialLeft": 1,
+      "restockable": true,
+      "occupancy": "~3 tracks",
+      "description": "Hand over the crate: a friend picks your next three tracks and you play them as they come."
+    },
+    {
+      "id": "dnb-blast",
+      "name": "DNB BLAST",
+      "glyph": "💥",
+      "shape": "challenge",
+      "tier": 0,
+      "initialLeft": 1,
+      "restockable": true,
+      "occupancy": "~2 min",
+      "description": "Drop into drum and bass for about 90 seconds, then mix back out gracefully."
+    },
+    {
+      "id": "no-headphones-mix",
+      "name": "NO-HEADPHONES MIX",
+      "glyph": "🔇",
+      "shape": "challenge",
+      "tier": 0,
+      "initialLeft": 1,
+      "restockable": true,
+      "occupancy": "1 transition",
+      "description": "Headphones off for the next transition — beatmatch on the room alone."
+    },
+    {
+      "id": "dance-party",
+      "name": "DANCE PARTY",
+      "glyph": "🕺",
+      "shape": "challenge",
+      "tier": 0,
+      "initialLeft": 1,
+      "restockable": true,
+      "occupancy": "~1 track",
+      "description": "Loop the track, step out from behind the decks and dance a full track with the house."
+    },
+    {
+      "id": "alien-costume",
+      "name": "ALIEN COSTUME · 30 MIN",
+      "glyph": "👽",
+      "shape": "challenge",
+      "tier": 0,
+      "initialLeft": 1,
+      "restockable": true,
+      "occupancy": "passive 30 min",
+      "description": "Put on the alien costume and keep it on for the next 30 minutes while you play as normal."
+    },
+    {
+      "id": "shirt-t1",
+      "name": "SHIRT",
+      "glyph": "👕",
+      "shape": "giveaway",
+      "tier": 1,
+      "initialLeft": 2,
+      "restockable": false,
+      "occupancy": "instant",
+      "description": "A chat raffle for a shirt. The winner is drawn in chat, and gets their claim link from the streamer straight after.",
+      "raffle": true
+    },
+    {
+      "id": "usb-rekordbox",
+      "name": "USB · REKORDBOX EXPORT",
+      "glyph": "💾",
+      "shape": "giveaway",
+      "tier": 1,
+      "initialLeft": 2,
+      "restockable": false,
+      "occupancy": "instant",
+      "description": "A chat raffle for a USB stick loaded with a curated rekordbox export. When it comes up Firebot draws the winner, who is handed the stick on the night.",
+      "raffle": true
+    },
+    {
+      "id": "genre-roulette",
+      "name": "GENRE ROULETTE",
+      "glyph": "🎲",
+      "shape": "challenge",
+      "tier": 1,
+      "initialLeft": 1,
+      "restockable": true,
+      "occupancy": "10–15 min",
+      "description": "The overlay draws one genre from your off-lane list and you mix it for 10–15 minutes. The list lives on the Config page.",
+      "miniDraw": "genreRoulette"
+    },
+    {
+      "id": "ten-tracks-ten-min",
+      "name": "10 TRACKS IN 10 MIN",
+      "glyph": "⏱️",
+      "shape": "challenge",
+      "tier": 1,
+      "initialLeft": 1,
+      "restockable": true,
+      "occupancy": "10 min",
+      "description": "Ten tracks in ten minutes — about a minute each. Keep it moving."
+    },
+    {
+      "id": "blindfold-transition",
+      "name": "BLINDFOLD TRANSITION",
+      "glyph": "🙈",
+      "shape": "challenge",
+      "tier": 1,
+      "initialLeft": 1,
+      "restockable": true,
+      "occupancy": "1 transition",
+      "description": "Blindfold on for one whole transition."
+    },
+    {
+      "id": "chopsticks-mix",
+      "name": "CHOPSTICKS MIX",
+      "glyph": "🥢",
+      "shape": "challenge",
+      "tier": 1,
+      "initialLeft": 1,
+      "restockable": true,
+      "occupancy": "1 transition",
+      "description": "Mix the next transition using chopsticks only."
+    },
+    {
+      "id": "chat-rule-draw",
+      "name": "CHAT-RULE DRAW",
+      "glyph": "📜",
+      "shape": "challenge",
+      "tier": 1,
+      "initialLeft": 1,
+      "restockable": true,
+      "occupancy": "10 min passive",
+      "description": "The overlay draws one rule from the chat-rule list and you play by it for about 10 minutes — third-person mode, say, or boxing-MC track announcements. The list lives on the Config page.",
+      "miniDraw": "chatRules"
+    },
+    {
+      "id": "gaming-stream-unlock",
+      "name": "GAMING STREAM UNLOCK",
+      "glyph": "🎮",
+      "shape": "moment",
+      "tier": 1,
+      "initialLeft": 1,
+      "restockable": false,
+      "occupancy": "instant (communal)",
+      "description": "Chat has unlocked a gaming stream. Commit to it and announce it on the spot; the date is set later. Nothing to do at the decks tonight."
+    },
+    {
+      "id": "pie-to-the-face",
+      "name": "PIE TO THE FACE",
+      "glyph": "🥧",
+      "shape": "stunt",
+      "tier": 2,
+      "initialLeft": 1,
+      "restockable": false,
+      "occupancy": "instant, legendary",
+      "description": "You take a pie to the face, on camera, right now."
+    },
+    {
+      "id": "b2b-guest-dj",
+      "name": "B2B WITH GUEST DJ",
+      "glyph": "🤝",
+      "shape": "stunt",
+      "tier": 2,
+      "initialLeft": 1,
+      "restockable": false,
+      "occupancy": "30–45 min",
+      "description": "A back-to-back set with the guest DJ, 30–45 minutes. Suspend this one once the guest has called it a night."
+    },
+    {
+      "id": "alter-ego-takeover",
+      "name": "ALTER EGO TAKEOVER",
+      "glyph": "🪩",
+      "shape": "stunt",
+      "tier": 2,
+      "initialLeft": 1,
+      "restockable": false,
+      "occupancy": "costume bit",
+      "description": "Your alter ego takes over: put on the costume and play in character for a bit."
+    },
+    {
+      "id": "custom-mix-commission",
+      "name": "CUSTOM MIX COMMISSION",
+      "glyph": "🎚️",
+      "shape": "giveaway",
+      "tier": 2,
+      "initialLeft": 1,
+      "restockable": false,
+      "occupancy": "post-event",
+      "description": "A chat raffle for a custom mix made after the event. The winner picks the vibe, genre or artists; it goes up on SoundCloud with a dedication.",
+      "raffle": true
+    },
+    {
+      "id": "party-polaroid",
+      "name": "PARTY POLAROID",
+      "glyph": "📸",
+      "shape": "giveaway",
+      "tier": 2,
+      "initialLeft": 1,
+      "restockable": false,
+      "occupancy": "instant + mail",
+      "description": "A chat raffle for a polaroid from the party, signed by the whole house and mailed to the winner.",
+      "raffle": true
+    }
+  ],
+  "lists": {
+    "genreRoulette": [
+      "DISCO / NU-DISCO",
+      "UK GARAGE",
+      "BREAKS / BREAKBEAT",
+      "DUBSTEP",
+      "TRANCE",
+      "HARDSTYLE / HARDCORE",
+      "JUNGLE",
+      "HIP-HOP / TRAP",
+      "DUB TECHNO / MINIMAL",
+      "PSYTRANCE",
+      "SYNTHWAVE / 80S",
+      "REGGAETON / LATIN",
+      "FUNK / SOUL",
+      "DOWNTEMPO / AMBIENT"
+    ],
+    "chatRules": [
+      "BOXING-MC TRACK ANNOUNCEMENTS",
+      "SPORTS-COMMENTATOR PLAY-BY-PLAY",
+      "COMPLIMENT A RANDOM CHATTER BY NAME",
+      "THIRD-PERSON MODE",
+      "CHAT PICKS THE DJ'S ALIAS FOR 10 MIN",
+      "NATURE-DOCUMENTARY NARRATION OF THE CROWD"
+    ]
+  }
+}
